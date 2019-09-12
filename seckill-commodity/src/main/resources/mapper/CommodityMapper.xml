@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dingding.seckill.dao.CommodityMapper">
+    <update id="reduceNumber">
+        update commodity
+        set number = number - 1
+        where commodity_id = #{commodityId}
+        and end_time >= #{killTime}
+        and start_time &lt;= #{killTime}
+        and number > 0
+    </update>
+
+    <select id="queryById" resultType="com.dingding.seckill.entity.Commodity">
+        select id,commodity_id,name,number,start_time,end_time,create_time
+        from commodity
+        where commodity_id = #{commodity_id}
+    </select>
+
+    <select id="queryAll" resultType="com.dingding.seckill.entity.Commodity">
+        select id,commodity_id,name,number,start_time,end_time,create_time
+        from commodity
+        order by create_time desc
+    </select>
+</mapper>

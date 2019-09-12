@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dingding.seckill.dao.OrderMapper">
+
+    <insert id="insertOrder" parameterType="com.dingding.seckill.entity.Order">
+        insert ignore into `order` (commodity_id, user_phone,state)
+        values (#{commodityId},#{userPhone},0)
+    </insert>
+
+    <select id="queryByIdWithSeckill" resultType="com.dingding.seckill.entity.Order">
+        select
+        o.id,o.commodity_id,o.user_phone,o.state,o.create_time,
+        c.commodity_id 'commodity.commodity_id',c.name 'commodity.name',c.number 'commodity.number',
+        c.start_time 'commodity.start_time',c.end_time 'commodity.end_time',c.create_time 'commodity.create_time'
+        from `commodity` c INNER JOIN  `order` o
+        on `o`.`commodity_id` = `c`.`commodity_id`
+        where `o`.`commodity_id`=  #{commodityId} and `o`.`user_phone` = #{userPhone}
+    </select>
+
+    <select id="queryOrderByCommodityId" resultType="com.dingding.seckill.entity.Order">
+        select
+        o.id,o.commodity_id,o.user_phone,o.create_time,c.name
+        from `commodity` c inner join `order` o
+        on c.commodity_id = o.commodity_id
+        where c.commodity_id = #{commodityId}
+        and user_phone = #{userPhone}
+    </select>
+
+
+</mapper>
