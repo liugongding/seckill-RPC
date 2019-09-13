@@ -7,8 +7,7 @@ import com.dingding.seckill.dto.SeckillStatusExecution;
 import com.dingding.seckill.entity.Commodity;
 import com.dingding.seckill.entity.User;
 import com.dingding.seckill.enums.HandleSeckillEnum;
-import com.dingding.seckill.exception.RepeatKillException;
-import com.dingding.seckill.exception.SeckillCloseException;
+import com.dingding.seckill.enums.SeckillStateEnum;
 import com.dingding.seckill.exception.SeckillException;
 import com.dingding.seckill.service.CommodityService;
 import lombok.extern.slf4j.Slf4j;
@@ -125,31 +124,50 @@ public class CommodityServiceImpl implements CommodityService {
 
     @Override
     public SeckillStatusExecution executeSeckill(Integer commodityId, Long userPhone, String md5) {
-        if (md5 == null || !md5.equals(getMD5(commodityId))) {
-            throw new SeckillException("seckill data rewrite");
-        }
-
-
+        //先查询redis、如果有订单的话则直接返回结果
+        SeckillStatusExecution seckillStatusExecution = null;
+        Integer commodityId_userPhone = commodityId + userPhone.intValue();
         try {
-            readMqService.createSeckillMq(new User(commodityId, userPhone));
-            return new SeckillStatusExecution(commodityId, userPhone, HandleSeckillEnum.HANDLING);
-        } catch (SeckillCloseException e1) {
-            throw e1;
-        } catch (RepeatKillException e2) {
-            throw e2;
-        } catch (SeckillException e3) {
-            throw e3;
+            if (md5 == null || !md5.equals(getMD5(commodityId))) {
+                throw new SeckillException("seckill data rewrite");
+            }
+            SeckillExecution seckillExecution = (SeckillExecution) redisTemplate.boundHashOps(SECKILLEXECUTON).get(commodityId_userPhone);
+            if (seckillExecution == null) {
+                //创建mq、减库存
+                readMqService.createSeckillMq(new User(commodityId, userPhone));
+                //异步返回结果
+                seckillStatusExecution = new SeckillStatusExecution(commodityId, userPhone, HandleSeckillEnum.HANDLING);
+            } else {
+                if (seckillExecution.getState() == -1) {
+                    //返回重复创建订单
+                    seckillStatusExecution = new SeckillStatusExecution(commodityId, userPhone, SeckillStateEnum.REPEAT_KILL);
+                }
+                if (seckillExecution.getState() == 0) {
+                    //商品已售罄
+                    seckillStatusExecution = new SeckillStatusExecution(commodityId,userPhone,SeckillStateEnum.END);
+                }
+            }
+            return seckillStatusExecution;
+        } catch (SeckillException e) {
+            log.error("数据被篡改：{}", e.getMessage());
         }
+        return seckillStatusExecution;
     }
 
     @Override
     public SeckillExecution querySeckillStatus(Integer commodityId_userPhone) throws InterruptedException {
-         SeckillExecution seckillExecution = null;
+        //只有秒杀成功才返回
+        SeckillExecution seckillExecution = null;
         while (true) {
             Thread.sleep(2000);
             seckillExecution = (SeckillExecution) redisTemplate.boundHashOps(SECKILLEXECUTON).get(commodityId_userPhone);
-            if (seckillExecution != null) {
+            log.info("轮询秒杀状态:{}",seckillExecution);
+            if (seckillExecution.getState() == 1) {
                 return seckillExecution;
+            } else if (seckillExecution.getState() == 0) {
+                return seckillExecution;
+            } else {
+                return null;
             }
         }
     }

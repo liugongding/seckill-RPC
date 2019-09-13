@@ -47,7 +47,7 @@ public class SuccessSeckillImpl implements SuccessSeckillApi {
     private  RedisTemplate redisTemplate;
 
     @Override
-    @GlobalTransactional
+    @GlobalTransactional(rollbackFor = RuntimeException.class)
     public void reduceStock(User user) {
         Integer commodityId_userPhone = user.getCommodityId() + user.getUserPhone().intValue();
         log.info("commodityId_userPhone:{}",commodityId_userPhone);
@@ -117,8 +117,11 @@ public class SuccessSeckillImpl implements SuccessSeckillApi {
                 }
             }
         }
-        catch (RepeatKillException | SeckillCloseException e) {
-            log.error("秒杀异常：{}", e.getMessage());
+        catch (RepeatKillException e) {
+            log.error("重复秒杀：{}", e.getMessage());
+            throw e;
+        }catch (SeckillCloseException e) {
+            log.error("秒杀结束:{}", e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("内部异常：{}", e.getMessage());

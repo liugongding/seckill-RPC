@@ -45,17 +45,18 @@ public interface CommodityService {
      * @param commodityId
      * @param userPhone
      * @param md5
+     * @return
      * @throws SeckillException
      * @throws SeckillCloseException
      * @throws RepeatKillException
-     * @return
      */
     SeckillStatusExecution executeSeckill(Integer commodityId, Long userPhone, String md5)
             throws SeckillException, SeckillCloseException, RepeatKillException, Exception;
 
     /**
-     * redis 查询秒杀状态
-     * 直到 redis 有数据就返回
+     * 模拟短信通知
+     * 只有秒杀成功才有短信通知
+     *
      * @param commodityId_userPhone
      * @return
      */

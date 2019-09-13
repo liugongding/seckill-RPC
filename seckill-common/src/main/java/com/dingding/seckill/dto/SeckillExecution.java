@@ -2,6 +2,7 @@ package com.dingding.seckill.dto;
 
 import com.dingding.seckill.entity.Order;
 import com.dingding.seckill.enums.SeckillStateEnum;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.io.Serializable;
  *
  * @author liudingding
  */
+@Data
 @NoArgsConstructor
 public class SeckillExecution implements Serializable {
 
@@ -60,45 +62,4 @@ public class SeckillExecution implements Serializable {
         this.stateInfo = stateEnum.getStateInfo();
     }
 
-    public long getSeckillId() {
-        return orderId;
-    }
-
-    public void setSeckillId(Integer orderId) {
-        this.orderId = orderId;
-    }
-
-    public int getSetate() {
-        return state;
-    }
-
-    public void setSetate(int setate) {
-        this.state = state;
-    }
-
-    public String getStateInfo() {
-        return stateInfo;
-    }
-
-    public void setStateInfo(String stateInfo) {
-        this.stateInfo = stateInfo;
-    }
-
-    public Order getSuccessKilled() {
-        return order;
-    }
-
-    public void setSuccessKilled(Order successKilled) {
-        this.order = order;
-    }
-
-    @Override
-    public String toString() {
-        return "SeckillExecution{" +
-                "orderId=" + orderId +
-                ", setate=" + state +
-                ", stateInfo='" + stateInfo + '\'' +
-                ", successKilled=" + order +
-                '}';
-    }
 }
