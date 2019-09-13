@@ -56,6 +56,7 @@ public interface CommodityService {
     /**
      * 模拟短信通知
      * 只有秒杀成功才有短信通知
+     * TODO 还有轮询那段代码不合理、有待优化
      *
      * @param commodityId_userPhone
      * @return

@@ -21,10 +21,10 @@ import javax.annotation.Resource;
 import java.util.Date;
 
 /**
- * @Description
- * 这里由于分布式事务没有的一个小bug没有解决、所以我们多查了一次 db ，有待优化
+ * @Description 这里由于分布式事务没有的一个小bug没有解决、所以我们多查了一次 db ，有待优化
  * 分布式事务插入成功与否都返回-1、不知道如何解决
  * 因此我们根据 commodityId 和 userPhone 查出 order 是否存在进而判断是否重复秒杀
+ * TODO 要不要把重复秒杀或秒杀结束的信息存到redis有待优化
  * @Author liugongding
  * @Date 2019-09-06
  */
@@ -44,26 +44,26 @@ public class SuccessSeckillImpl implements SuccessSeckillApi {
     private SeckillStatusService seckillStatusService;
 
     @Autowired
-    private  RedisTemplate redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Override
     @GlobalTransactional(rollbackFor = RuntimeException.class)
     public void reduceStock(User user) {
         Integer commodityId_userPhone = user.getCommodityId() + user.getUserPhone().intValue();
-        log.info("commodityId_userPhone:{}",commodityId_userPhone);
+        log.info("commodityId_userPhone:{}", commodityId_userPhone);
         log.info("秒杀对象:{}", user);
         try {
             //查询订单是否存在
-            log.info("商品id：{}",user.getCommodityId());
-            log.info("用户手机号:{}",user.getUserPhone());
+            log.info("商品id：{}", user.getCommodityId());
+            log.info("用户手机号:{}", user.getUserPhone());
             Order orderIdResult = orderService.queryOrderByCommodityId(user.getCommodityId(), user.getUserPhone());
-            log.info("订单详情：{}",orderIdResult);
+            log.info("订单详情：{}", orderIdResult);
             if (orderIdResult != null) {
                 //重复创建订单
-                SeckillExecution seckillExecution = new SeckillExecution(commodityId_userPhone,SeckillStateEnum.REPEAT_KILL);
+                SeckillExecution seckillExecution = new SeckillExecution(commodityId_userPhone, SeckillStateEnum.REPEAT_KILL);
 
                 //保存秒杀状态
-                redisTemplate.boundHashOps(KEY).put(commodityId_userPhone,seckillExecution);
+                redisTemplate.boundHashOps(KEY).put(commodityId_userPhone, seckillExecution);
 
                 //TODO 66，67,68 行多余、为了方便打印日志，测试完删除
                 SeckillExecution seckillExecutionStatus = (SeckillExecution) redisTemplate.boundHashOps(KEY).get(commodityId_userPhone);
@@ -80,8 +80,8 @@ public class SuccessSeckillImpl implements SuccessSeckillApi {
                 if (updateResult <= 0) {
                     //秒杀活动已结束
                     log.info("updateResult:{}", updateResult);
-                    SeckillExecution seckillExecution = new SeckillExecution(commodityId_userPhone,SeckillStateEnum.END);
-                    redisTemplate.boundHashOps(KEY).put(commodityId_userPhone,seckillExecution);
+                    SeckillExecution seckillExecution = new SeckillExecution(commodityId_userPhone, SeckillStateEnum.END);
+                    redisTemplate.boundHashOps(KEY).put(commodityId_userPhone, seckillExecution);
 
                     //TODO 66，67,68 行多余、为了方便打印日志，测试完删除
                     SeckillExecution seckillExecutionStatus = (SeckillExecution) redisTemplate.boundHashOps(KEY).get(commodityId_userPhone);
@@ -100,14 +100,14 @@ public class SuccessSeckillImpl implements SuccessSeckillApi {
                         commodity = commodityMapper.queryById(user.getCommodityId());
                     }
                     commodity.setNumber(commodity.getCommodityId() - 1);
-                    redisTemplate.boundHashOps(COMMODITY).put(user.getCommodityId(),commodity);
+                    redisTemplate.boundHashOps(COMMODITY).put(user.getCommodityId(), commodity);
 
                     //返回订单结果
                     SeckillExecution seckillExecution = new SeckillExecution(commodityId_userPhone, SeckillStateEnum.SUCCESS, order);
                     log.info("seckillExecution:{}", seckillExecution);
 
                     // 将订单结果缓存
-                    redisTemplate.boundHashOps(KEY).put(commodityId_userPhone,seckillExecution);
+                    redisTemplate.boundHashOps(KEY).put(commodityId_userPhone, seckillExecution);
 
                     //TODO 下面代码是多余的、是为了方便打印日志,测试完成之后删除
                     //TODO 查询秒杀状态
@@ -116,11 +116,10 @@ public class SuccessSeckillImpl implements SuccessSeckillApi {
                     log.info("秒杀完成");
                 }
             }
-        }
-        catch (RepeatKillException e) {
+        } catch (RepeatKillException e) {
             log.error("重复秒杀：{}", e.getMessage());
             throw e;
-        }catch (SeckillCloseException e) {
+        } catch (SeckillCloseException e) {
             log.error("秒杀结束:{}", e.getMessage());
             throw e;
         } catch (Exception e) {

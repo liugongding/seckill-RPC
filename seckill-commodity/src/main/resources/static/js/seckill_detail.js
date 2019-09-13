@@ -125,9 +125,6 @@ var seckill = {
                             if (obj.state == 0) {
                                 alert("不对起、该秒杀活动已结束")
                             }
-                            if (obj.state == -1) {
-                                alert("对不起、不能重复购买")
-                            }
                             if (obj.state == -2) {
                                 alert("系统异常、请稍后重试")
                             }

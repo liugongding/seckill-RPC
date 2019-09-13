@@ -138,7 +138,7 @@ public class CommodityServiceImpl implements CommodityService {
                 //异步返回结果
                 seckillStatusExecution = new SeckillStatusExecution(commodityId, userPhone, HandleSeckillEnum.HANDLING);
             } else {
-                if (seckillExecution.getState() == -1) {
+                if (seckillExecution.getState() == 1) {
                     //返回重复创建订单
                     seckillStatusExecution = new SeckillStatusExecution(commodityId, userPhone, SeckillStateEnum.REPEAT_KILL);
                 }
