@@ -2,6 +2,7 @@ package com.dingding.seckill.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.dingding.seckill.dto.SeckillExecution;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 @ServerEndpoint(value = "/ws")
 @Component
+@Slf4j
 public class WebSocketServer {
 
     //此处是解决无法注入的关键
@@ -108,7 +110,7 @@ public class WebSocketServer {
         commodityService = applicationContext.getBean(CommodityServiceImpl.class);
         System.out.println(commodityService);
         SeckillExecution seckillExecution = commodityService.querySeckillStatus(commodityId_userPhone);
-        System.out.println(seckillExecution);
+        log.info("即将发送给客户端的seckillExecution：{}",seckillExecution);
         this.session.getBasicRemote().sendText(JSON.toJSONString(seckillExecution));
     }
 }
