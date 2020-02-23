@@ -15,3 +15,6 @@
 消费者将订单号和商品号组装、并减库存和创建订单
 * common模块：存放一些实体类
 * api模块：存放dubbo接口
+
+## 项目访问
+* localhost:8092/seckill/list
