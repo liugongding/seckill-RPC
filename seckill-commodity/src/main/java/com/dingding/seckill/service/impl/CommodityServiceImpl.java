@@ -159,7 +159,7 @@ public class CommodityServiceImpl implements CommodityService {
         //只有秒杀成功才返回
         SeckillExecution seckillExecution = null;
         while (true) {
-            Thread.sleep(2000);
+            Thread.sleep(4000);
             seckillExecution = (SeckillExecution) redisTemplate.boundHashOps(SECKILLEXECUTON).get(commodityId_userPhone);
             log.info("轮询秒杀状态:{}",seckillExecution);
             if (seckillExecution.getState() == 1) {

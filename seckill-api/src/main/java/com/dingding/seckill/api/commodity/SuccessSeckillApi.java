@@ -1,6 +1,8 @@
 package com.dingding.seckill.api.commodity;
 
 import com.dingding.seckill.entity.User;
+import com.dingding.seckill.exception.RepeatKillException;
+import com.dingding.seckill.exception.SeckillCloseException;
 
 /**
  * @Description
@@ -13,5 +15,5 @@ public interface SuccessSeckillApi {
      * 减库存操作
      * @param user
      */
-     void reduceStock(User user) ;
+     void reduceStock(User user) throws RepeatKillException, SeckillCloseException;
 }

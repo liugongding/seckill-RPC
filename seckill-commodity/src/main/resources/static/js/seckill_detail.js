@@ -105,7 +105,7 @@ var seckill = {
                             }
                         });
                         //3、查询秒杀结果
-                        var ws = new WebSocket("ws://localhost:8092/ws");
+                        var ws = new WebSocket("ws://localhost:9999/ws");
                         // 客户端向服务端发送消息
                         ws.onopen = function () {
                             console.log('已连接服务器');
@@ -121,9 +121,6 @@ var seckill = {
 
                             if (obj.state == 1) {
                                 alert("恭喜您、购买成功")
-                            }
-                            if (obj.state == 0) {
-                                alert("不对起、该秒杀活动已结束")
                             }
                             if (obj.state == -2) {
                                 alert("系统异常、请稍后重试")

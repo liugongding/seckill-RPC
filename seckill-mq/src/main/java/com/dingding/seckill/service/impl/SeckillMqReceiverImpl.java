@@ -44,7 +44,10 @@ public class SeckillMqReceiverImpl {
             )
     )
     @RabbitHandler
-    public void onOrderMessage(@Payload String msg, @Headers Map<String, Object> headers, Channel channel, Message message, CorrelationData correlationData) throws SeckillCloseException, RepeatKillException, IOException {
+    public void onOrderMessage(@Payload String msg, @Headers Map<String, Object> headers,
+                               Channel channel, Message message,
+                               CorrelationData correlationData)
+            throws SeckillCloseException, RepeatKillException, IOException {
         //消费者开始消费
         log.info("---------收到消息，开始消费--------");
         User user = FastJsonConvertUtil.convertJSONToObject(msg,User.class);
@@ -55,7 +58,7 @@ public class SeckillMqReceiverImpl {
         log.info("消息id:{}" , correlationData.getId());
         log.info("消息:{}" , message.getHeaders());
 
-        // TODO
+
         /**
          * Delivery Tag 用来标志信道中投递的消息。RabbitMQ 推送消息给 Consumer 时，会附带一个Delivery Tag
          * 以便 Consumer 可以在消息确认是告诉 RabbitMQ 到底那条消息被确认了

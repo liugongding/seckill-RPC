@@ -8,11 +8,13 @@ import com.dingding.seckill.service.impl.CommodityServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Description 秒杀应用接口
@@ -119,4 +121,5 @@ public class SeckillController {
     public SeckillResult<Long> execute(Model model) {
         return new SeckillResult<>(true, System.currentTimeMillis());
     }
+
 }

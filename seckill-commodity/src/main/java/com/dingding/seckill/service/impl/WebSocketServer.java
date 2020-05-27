@@ -102,8 +102,6 @@ public class WebSocketServer {
      * @throws IOException
      */
     public void sendText(String msg) throws IOException, InterruptedException {
-
-
         Integer commodityId_userPhone = Integer.parseInt(msg);
         System.out.println("服务向客户端发送消息:" + commodityId_userPhone);
 

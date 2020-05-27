@@ -4,7 +4,7 @@
 <mapper namespace="com.dingding.seckill.dao.OrderMapper">
 
     <insert id="insertOrder" parameterType="com.dingding.seckill.entity.Order">
-        insert ignore into `order` (commodity_id, user_phone,state)
+        insert ignore into good (commodity_id, user_phone,state)
         values (#{commodityId},#{userPhone},0)
     </insert>
 
@@ -13,7 +13,7 @@
         o.id,o.commodity_id,o.user_phone,o.state,o.create_time,
         c.commodity_id 'commodity.commodity_id',c.name 'commodity.name',c.number 'commodity.number',
         c.start_time 'commodity.start_time',c.end_time 'commodity.end_time',c.create_time 'commodity.create_time'
-        from `commodity` c INNER JOIN  `order` o
+        from `commodity` c INNER JOIN  `good` o
         on `o`.`commodity_id` = `c`.`commodity_id`
         where `o`.`commodity_id`=  #{commodityId} and `o`.`user_phone` = #{userPhone}
     </select>
@@ -21,7 +21,7 @@
     <select id="queryOrderByCommodityId" resultType="com.dingding.seckill.entity.Order">
         select
         o.id,o.commodity_id,o.user_phone,o.create_time,c.name
-        from `commodity` c inner join `order` o
+        from `commodity` c inner join `good` o
         on c.commodity_id = o.commodity_id
         where c.commodity_id = #{commodityId}
         and user_phone = #{userPhone}

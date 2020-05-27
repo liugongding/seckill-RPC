@@ -48,11 +48,10 @@ public class SuccessSeckillImpl implements SuccessSeckillApi {
 
     @Override
     @GlobalTransactional(rollbackFor = RuntimeException.class)
-    public void reduceStock(User user) {
+    public void reduceStock(User user) throws RepeatKillException, SeckillCloseException{
         Integer commodityId_userPhone = user.getCommodityId() + user.getUserPhone().intValue();
         log.info("commodityId_userPhone:{}", commodityId_userPhone);
         log.info("秒杀对象:{}", user);
-        try {
             //查询订单是否存在
             log.info("商品id：{}", user.getCommodityId());
             log.info("用户手机号:{}", user.getUserPhone());
@@ -109,22 +108,11 @@ public class SuccessSeckillImpl implements SuccessSeckillApi {
                     // 将订单结果缓存
                     redisTemplate.boundHashOps(KEY).put(commodityId_userPhone, seckillExecution);
 
-                    //TODO 下面代码是多余的、是为了方便打印日志,测试完成之后删除
                     //TODO 查询秒杀状态
                     SeckillExecution seckillExecutionStatus = (SeckillExecution) redisTemplate.boundHashOps(KEY).get(commodityId_userPhone);
                     log.info("秒杀执行状态:{}", seckillExecutionStatus);
                     log.info("秒杀完成");
                 }
             }
-        } catch (RepeatKillException e) {
-            log.error("重复秒杀：{}", e.getMessage());
-            throw e;
-        } catch (SeckillCloseException e) {
-            log.error("秒杀结束:{}", e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            log.error("内部异常：{}", e.getMessage());
-            throw e;
-        }
     }
 }
