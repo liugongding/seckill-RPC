@@ -2,14 +2,15 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="seckill-commodity" />
-        <module name="seckill-api" />
         <module name="seckill-mq" />
+        <module name="seckill-api" />
         <module name="seckill-common" />
+        <module name="seckill-commodity" />
         <module name="seckill-order" />
       </profile>
     </annotationProcessing>
